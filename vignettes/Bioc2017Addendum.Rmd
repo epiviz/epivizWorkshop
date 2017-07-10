@@ -1,0 +1,62 @@
+---
+title: "An alternative way of running this workshop exercise"
+author: "Hector Corrada Bravo"
+date: "`r Sys.Date()`"
+# output: rmarkdown::html_vignette
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+# runtime: shiny
+---
+
+In this document we setup the starting workspace for the workshop to run locally using the `epivizrStandalone` package
+and the Rstudio viewer pane, to make it easier to work with.
+
+The goal is to add a genes track for hg19, a track with CpG islands, and a heatmap with expression from the gene expression barcode project.
+
+Let's start the application with hg19 as the reference for genes track. 
+
+lets first load the libraries
+```{r, eval=TRUE}
+library(epivizrChart)
+library(Homo.sapiens)
+library(Bioc2017)
+```
+
+We have a new element called environment. The epiviz-environment enables brushing across all the charts in your current workspace. The environment also lets you set a genomic location to all its children charts. This will be more clear at the end of this vignette.. First, Create an epiviz enivornment
+```{r}
+epivizEnv <- EpivizEnvironment(chr="chr11", start= 34000000, end = 39000000)
+# epivizEnv <- EpivizEnvironment(chr="chr11")
+```
+
+Lets add the hg19 reference genes track
+```{r}
+genes_track <- EpivizChart(Homo.sapiens, parent=epivizEnv)
+
+genes_track
+```
+
+Now, let's add the CpG island track included in this package.
+
+```{r}
+data(cgi_gr)
+cgi_track <- EpivizChart(cgi_gr, parent=epivizEnv, datasource_name="CpG Islands")
+
+cgi_track
+```
+
+Now, let's add a heatmap with the gene expression barcode data
+
+```{r}
+data(bcode_eset)
+bcode_hmap <- EpivizChart(bcode_eset, parent=epivizEnv, datasource_name="Gene Expression Barcode", chart="HeatmapPlot")
+
+bcode_hmap
+```
+
+Finally lets print all the charts together.
+```{r}
+epivizEnv
+```
