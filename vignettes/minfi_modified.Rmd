@@ -257,14 +257,14 @@ epivizEnv
 
 and add the promoter regions and average methylation tracks we added previously. 
 
-```{r}
+```{r, eval=FALSE}
 promoter_track <- EpivizChart(promoter_regions, datasource_name="Promoters", parent=epivizEnv)
 beta_track <- EpivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv)
 ```
 
 Next, use Minfi's bumphunter function to find differentially methylated regions, which are deviations in the methylation of relatively small CpG loci clusters at the gene promoter scale (1-2kb), between normal and tumor breast tissue. Bumphunting uses a cutoff value to determine the magnitude in methylation difference to identify differentially methylated regions (DMR).
 
-```{r}
+```{r, eval=FALSE}
 # first subset to breast samples
 gratio_set_breast <- gratio_set[,which(gratio_set$Tissue=="breast")]
 
@@ -284,7 +284,7 @@ bumps <- bumphunter(gratio_set_breast, mod, cluster=cl, cutoff=0.1, B=0)
 
 Let's add a track containg the resulting dmrs. We will color blocks in track depending on the kind of dmr we find. To do so we will create to datasources, one for hypo-methylated DMRs, and one for hyper-methylated DMRs.
 
-```{r}
+```{r, eval=FALSE}
 # categorize dmrs by type
 dmr_gr <- with(bumps$table, GRanges(chr, IRanges(start,end), area=area, value=value))
 dmr_gr$type <- ifelse(abs(dmr_gr$value) < 0.1, "neither",
@@ -324,7 +324,7 @@ MGMT             | 10           | 131265454 | 131565783
 
 Another analysis of interest would be to navigate through slideshow regions of the hyper-methylated promoters regions which could reveal new interesting findings.
 
-```{r}
+```{r, eval=FALSE}
 # hyper_promoters <- subsetByOverlaps(hyper_gr, promoter_regions)
 # o <- order(-hyper_promoters$area)[1:5]
 # top_promoters <- hyper_promoters[o,]
@@ -339,7 +339,7 @@ The ending DMR Visualization workspace should look like this:
 
 Let's stop the current connection before the next section:
 
-```{r}
+```{r, eval=FALSE}
 # app$stop_app()
 epivizEnv$remove_all_charts()
 ```
@@ -348,20 +348,20 @@ epivizEnv$remove_all_charts()
 
 Let's start with the same basic workspace again.
 
-```{r}
+```{r, eval=FALSE}
 # app <- startEpiviz(workspace="kr0MpYk4g0u",try_ports=TRUE)
 ```
 
 The third analysis we will use from minfi will be based on finding larger regions of methylation differences (blocks) in breast cancer. As before, let's add tracks with promoter regions and average methylation percentages.
 
-```{r}
+```{r, eval=FALSE}
 promoter_track <- EpivizChart(promoter_regions, datasource_name="Promoters", parent=epivizEnv)
 beta_track <- EpivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv)
 ```
 
 Let's also add a track showing breast beta methylation difference across the genome
 
-```{r}
+```{r, eval=FALSE}
 cpg_gr$breast_diff <- cpg_gr$`breast:cancer` - cpg_gr$`breast:normal`
 diff_track <- EpivizChart(cpg_gr, datasource_name="Methylation Beta Difference", type="bp",
   columns="breast_diff", parent=epivizEnv)
@@ -373,14 +373,14 @@ And the gene expression MA plot as before using the epiviz UI.
 
 In comparison to bumphunter, Minfi's blockFinder function is used to find differences in methylation on a much larger scale than bump hunting (gene scale instead of promoter scale). Block finding uses the cpgCollapse function to create clusters of neighboring open sea loci, groups them into larger regions than bump hunting only would, and then uses bump hunting on the averages of these regions to detect large differentially methylated regions.
 
-```{r}
+```{r, eval=FALSE}
 cl <- cpgCollapse(gratio_set_breast)
 blocks <- blockFinder(cl$object, mod, cluster=cl$blockInfo$pns, cutoff = 0.1)
 ```
 
 Let's add a track with hypomethylated blocks identified. 
 
-```{r}
+```{r, eval=FALSE}
 blocks_gr <- with(blocks$table, GRanges(chr, IRanges(start,end), area=area, value=value))
 blocks_gr$type <- ifelse(abs(blocks_gr$value)<0.1, "neither",
   ifelse(blocks_gr$value<0, "hypo", "hyper"))
@@ -393,7 +393,7 @@ hypo_track
 
 Let's navigate through the blocks ordered by width
 
-```{r}
+```{r, eval=FALSE}
 # o <- order(-width(hypo_blocks))[1:5]
 # slideshow_regions <- hypo_blocks[o,] * .5
 # app$slideshow(slideshow_regions)
@@ -401,7 +401,7 @@ Let's navigate through the blocks ordered by width
 
 These blocks tend to occur in gene-poor regions. Let's look at blocks that may overlap gene regions. 
 
-```{r}
+```{r, eval=FALSE}
 # gene_regions <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene,columns="gene_id",
 #   single.strand.genes.only=TRUE)
 # hypo_gene_blocks <- subsetByOverlaps(hypo_blocks, gene.regions)

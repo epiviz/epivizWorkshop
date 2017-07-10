@@ -1,11 +1,19 @@
 Package: Bioc2017
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Interactive R markdown using epiviz web components
 Version: 0.1.0
-Author: Who wrote it
+Author: c(person("Hector", "Corrada Bravo", email = "hcorrada@gmail.com", role = c("aut"),
+        person("Jayaram", "Kancherla", email="jkanche@umiacs.umd.edu", role=c("aut", "cre")),
+        person("Brian", "Gottfried", email = "briangottfried@me.com", role = c("aut"))))
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: Create interactive R markdown documents using epiviz web components
+License: MIT
 Encoding: UTF-8
 LazyData: true
+Depends:
+    R (>= 3.4.0)
+Suggests: epivizrChart, epivizrData, GenomicFeatures, Homo.sapiens, hgu133plus2.db,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1

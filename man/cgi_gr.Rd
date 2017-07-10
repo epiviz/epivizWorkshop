@@ -15,4 +15,3 @@ A \code{\link[GenomicRanges]{GRanges}} object with locations of CpG Islands
 Locations of CpG Islands
 }
 \keyword{datasets}
-

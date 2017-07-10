@@ -15,4 +15,3 @@ A \code{\link[minfi]{GenomicRatioSet}} object with TCGA methylation data
 See vignette `data_preprocessing` for code to build this object.
 }
 \keyword{datasets}
-

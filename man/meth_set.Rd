@@ -15,4 +15,3 @@ A \code{\link[minfi]{MethylSet}} object
 See vignette `data_preprocessing` for code to build this object.
 }
 \keyword{datasets}
-
