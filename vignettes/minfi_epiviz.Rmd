@@ -54,9 +54,16 @@ RGChannelSet           | `preprocessIllumina`   | MethylSet        |
 MethylSet              | `mapToGenome`          | GenomicMethylSet | 
 GenomicMethylSet       | `ratioConvert`         | GenomicRatioSet  | 
 
+Installing, the `epivizrChart` package
+
+```{r, eval=FALSE}
+library(devtools)
+BiocInstaller::biocLite("epiviz/epivizrChart")
+```
+
 For this workshop we have subsetted these to chromosomes 10, 11 and 20:
 
-```{r}
+```{r, results='hide'}
 library(Bioc2017)
 library(minfi)
 library(epivizrChart)
@@ -121,7 +128,12 @@ Let's start the application with hg19 as the reference for genes track. We will 
 ```{r}
 epivizEnv <- epivizEnv(chr="chr11", start= 118000000, end = 121000000)
 
+# library(epivizrChart)
+library(Homo.sapiens)
+# epivizEnv <- epivizEnv(chr="chr11", start=119800000, end=120050000)
+
 genes_track <- epivizChart(Homo.sapiens, parent=epivizEnv)
+
 genes_track
 ```
 
@@ -138,7 +150,11 @@ Now, let's add a heatmap with the gene expression barcode data
 
 ```{r}
 data(bcode_eset)
-bcode_hmap <- epivizChart(bcode_eset, parent=epivizEnv, datasource_name="Gene Expression Barcode", chart="HeatmapPlot")
+
+# bcode_eset = updateObject(bcode_eset)
+
+settings <- list(maxColumns = 120, colLabel="SYMBOL")
+bcode_hmap <- epivizChart(bcode_eset, parent=epivizEnv, datasource_name="Gene Expression Barcode", chart="HeatmapPlot", settings = settings)
 
 bcode_hmap
 ```
@@ -246,29 +262,19 @@ pvals_track
 Finally, let's add an MA plot of BRCA methylation to visualize how methylation differences are distributed across probes. We can of course do this in R by adding methylation difference and average as additional columns to the "GenomicsRanges" object we are using. 
 
 ```{r}
+dmp_gr$methylation_diff = mean_betas[, "breast:cancer"] - mean_betas[, "breast:normal"]
+dmp_gr$methylation_avg = 0.5 * (mean_betas[, "breast:cancer"] + mean_betas[, "breast:normal"])
 
-gm_set_breast <- gm_set[,which(gm_set$Tissue=="breast")]
-breast_betas <- getBeta(gm_set_breast)
-pd <- pData(gm_set_breast)
-sample_indices <- split(seq(len=nrow(pd)), pd$Status)
-
-mean_meth_breast <- sapply(sample_indices, function(ind) rowMeans(breast_betas[,ind]))
-
-dmp_gr$columnM = mean_meth_breast[, "cancer"] - mean_meth_breast[, "normal"]
-dmp_gr$columnA = 0.5 * (mean_meth_breast[, "cancer"] + mean_meth_breast[, "normal"])
-
-
-cpg_gr <- granges(gm_set)
-mcols(cpg_gr) <- mean_betas
-
-ma_plot <- epivizChart(dmp_gr, parent=epivizEnv, chart="ScatterPlot", columns=c("columnA", "columnM"), type="bp")
+ma_plot <- epivizChart(dmp_gr, parent=epivizEnv, chart="ScatterPlot", columns=c("methylation_avg", "methylation_diff"), type="bp")
 ma_plot
 ```
 
 Now that we have added all of these tracks, let's navigate to the TRIM29 gene location to check the results discussed above. There are two ways to do this. One, we can navigate to the genomic location on the environment
 
 ```{r, eval=FALSE}
-epivizEnv$navigate("chr11", 119500000, 120100000)
+# epivizEnv$navigate("chr11", 44182278, 44631716) #ALX4
+epivizEnv$navigate("chr11", 119819400, 120150600) #TRIM29
+
 epivizEnv
 ```
 
