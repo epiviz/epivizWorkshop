@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
   
 ## Introduction
 
-The purpose of this workshop is to serve as a guide for analyzing 450k Illumina Human Methylation data to find differences in methylation at the base pair, and region levels. We will use previous research findings of differentially methylated locations, the TRIM29 gene and other transcription regulators between various solid tissue samples, including breast (BRCA), and colon (COAD), and lung (LUSC), and between normal and tumor breast (BRCA) samples are observed as guide. 
+The purpose of this workshop is to serve as a guide for analyzing 450k Illumina Human Methylation data to find differences in methylation at the base pair and region levels. We will use previous research findings of differentially methylated locations, the TRIM29 gene, and other transcription regulators between various solid tissue samples, including breast (BRCA), colon (COAD), lung (LUSC). Normal and tumor breast (BRCA) samples are observed as guide. 
 
 We will use mainly the `minfi` and `epivizrChart` packages in Bioconductor. The `minfi` package is used to identify differentially methylated positions, regions, and blocks. The `epivizrChart` package is used to create interactive visualizations for genomic data objects in R. This protocol aims to walk through the analysis and visualization of Illumina Infinium Human Methylation 450k data from the Cancer Genome Atlas (TCGA) project.
 
@@ -31,7 +31,7 @@ Research findings from Avraham et al. in 2014 conclude that the TRIpartite Motif
 
 The researchers identified 110 genes that were differentially methylated in the breast compared to all other epithelial tissues tested. Of these 110 genes, a group 15 of them were DNA binding and transcription regulators, which were found to have a notable relevance to cancer. Their analysis of TCGA data for these genes, including ALX4, GATA5, MGMT, NEUROG1, SOX10, SREBP1, ST18, TRIM29, and TP73, revealed methylation differences at most of the corresponding loci between normal and tumor breast samples. The methylation pattern also varied between breast cancer types, including basal, luminal-A and luminal-B, and between different normal tissue types, identifying these gene regions as differentially methylated regions (DMRs). The TRIM29 gene has a CpG island at the transcription start site of the gene (between 120,008,000 and 120,009,000 on chromosome 11)^1^. 
 
-In breast tissues, it was found that this CpG island was hypo-methylated methylation, and in other tissues, including colon and lung, it has full methylation. These results were found analyzing Illumina-Infinium HumanMethylation27 array data.  TRIM29 expression was higher in normal breast tissues than in other normal tissues tested. The main conclusion proposed by authors was that, "Epigenetic alterations affecting tissue-specific differentiation are the predominant mechanism by which epigenetic changes cause cancer^1^." 
+In breast tissues, it was found that this CpG island was hypo-methylated, and in other tissues, including colon and lung, it has full methylation. These results were found analyzing Illumina-Infinium HumanMethylation27 array data.  TRIM29 expression was higher in normal breast tissues than in other normal tissues tested. The main conclusion proposed by authors was that, "Epigenetic alterations affecting tissue-specific differentiation are the predominant mechanism by which epigenetic changes cause cancer^1^." 
 In this protocol we will recapitulate some of these findings and use interactive visualization to explore additional findings in this data.
 
 ## Gathering and Preprocessing Data
@@ -73,16 +73,16 @@ gratio_set
 
 The `epivizrChart` package is used to add interactive charts and dashboards for genomic data visualization into RMarkdown and HTML documents using the [epiviz](http://epiviz.org) framework. It provides an API to interactively create and manage web components that encapsulate epiviz charts. Charts can be embedded in R markdown/notebooks to create interactive documents. Epiviz Web components are built using the Google [Polymer](https://www.polymer-project.org/) library.
 
-### epiviz charts
+### Epiviz Charts
 
-epiviz charts are used to visualize genomic data objects in R/BioConductor. The data objects can be BioConductor data types for ex: Genomic Ranges, ExpressionSet, SummarizedExperiment etc. 
+Epiviz charts are used to visualize genomic data objects in R/BioConductor. The data objects can be BioConductor data types for ex: Genomic Ranges, ExpressionSet, SummarizedExperiment etc. 
 
 For example, to visualize hg19 reference genome as a genes track at a particular genomic location (`chr`, `start`, `end`)
 
 ```{r}
 library(Homo.sapiens)
 
-genes_track <- epivizChart(Homo.sapiens, chr="chr11", start= 118000000, end = 121000000)
+genes_track <- epivizChart(Homo.sapiens, chr="chr11", start=118000000, end=121000000)
 
 genes_track
 ```
@@ -91,19 +91,19 @@ genes_track
 `epivizChart` infers the chart type from the data object that was passed. Parameters are available to explicitly plot using a particular chart type.
 
 
-### epiviz environment and navigation components
+### Epiviz Environment and Navigation Components
 
 An important part of the `epivizrChart` design is that data and plots are separated: you can make multiple charts from the same data object without having to replicate data multiple times. This way, data queries are made by data object, not per chart, which leads to a more responsive design of the system. To enable this, we built the `epiviz-environment` web component. The environment element also enables brushing across all the charts. 
 
-`epiviz-navigation` is a specific instance of environment elements with genomic context linked to it. In interactive sessions with a data provider, navigation elements provide functionality to search for a gene/probe, navigate to a genomic location. Navigation elements also provide an ideogram view when collapsed. This will be more clear as we walk through the rest of the vignette. 
+`epiviz-navigation` is a specific instance of environment elements with genomic context linked to it. In interactive sessions with a data provider, navigation elements provide functionality to search for a gene/probe and navigate to a genomic location. Navigation elements also provide an ideogram view when collapsed. This will be more clear as we walk through the rest of the vignette. 
 
 To create an environment, 
 
 ```{r}
-epivizEnv <- epivizEnv(chr="chr11", start= 118000000, end = 121000000)
+epivizEnv <- epivizEnv(chr="chr11", start=118000000, end=121000000)
 
 # to add charts to the environment
-genes_track <- epivizChart(Homo.sapiens, chr="chr11", start= 118000000, end = 121000000, parent=epivizEnv)
+genes_track <- epivizChart(Homo.sapiens, chr="chr11", start=118000000, end=121000000, parent=epivizEnv)
 
 epivizEnv
 ```
@@ -119,7 +119,7 @@ To start our visualization, we will add a gene annotation track for the hg19 ref
 Let's start the application with hg19 as the reference for genes track. We will be adding charts to the environment element to enable brushing and reuse data objects.
 
 ```{r}
-epivizEnv <- epivizEnv(chr="chr11", start= 118000000, end = 121000000)
+epivizEnv <- epivizEnv(chr="chr11", start=118000000, end=121000000)
 
 genes_track <- epivizChart(Homo.sapiens, parent=epivizEnv)
 genes_track
@@ -158,8 +158,7 @@ Before we do this analysis, we may want to add a track showing promoter regions 
 ```{r}
 library(GenomicFeatures)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-promoter_regions <- promoters(TxDb.Hsapiens.UCSC.hg19.knownGene,upstream=1000,
-  downstream=200)
+promoter_regions <- promoters(TxDb.Hsapiens.UCSC.hg19.knownGene, upstream=1000, downstream=200)
 promoters_track <- epivizChart(promoter_regions, parent=epivizEnv, datasource_name="Promoters")
 promoters_track
 ```
@@ -187,8 +186,8 @@ Now, we are ready to perform the minfi analysis.
 library(doParallel)
 cores <- detectCores()
 registerDoParallel(cores)
-meth_set_breast <- meth_set[,which(meth_set$Tissue=="breast")]
-dmp <- dmpFinder(meth_set_breast,meth_set_breast$Status,type="categorical")
+meth_set_breast <- meth_set[, which(meth_set$Tissue == "breast")]
+dmp <- dmpFinder(meth_set_breast, meth_set_breast$Status,type="categorical")
 head(dmp)
 ```
 
@@ -218,7 +217,9 @@ pd <- pData(gratio_set)
 fac <- paste(pd$Tissue, pd$Status, sep=":")
 sample_indices <- split(seq(len=nrow(pd)), fac)
 
-mean_betas <- sapply(sample_indices, function(ind) rowMeans(betas[,ind]))
+mean_betas <- sapply(sample_indices, function(ind) rowMeans(betas[, ind]))
+
+head(mean_betas)
 ```
 
 Now we have a matrix with mean methylation for each group of samples which we will use to create our track. Let's create a `GRanges` object that maps each of these values to the corresponding probes genomic location. Finally, add these values as a line track.
@@ -251,12 +252,12 @@ Finally, let's add an MA plot of BRCA methylation to visualize how methylation d
 
 ```{r}
 
-gm_set_breast <- gm_set[,which(gm_set$Tissue=="breast")]
+gm_set_breast <- gm_set[, which(gm_set$Tissue == "breast")]
 breast_betas <- getBeta(gm_set_breast)
 pd <- pData(gm_set_breast)
 sample_indices <- split(seq(len=nrow(pd)), pd$Status)
 
-mean_meth_breast <- sapply(sample_indices, function(ind) rowMeans(breast_betas[,ind]))
+mean_meth_breast <- sapply(sample_indices, function(ind) rowMeans(breast_betas[, ind]))
 
 dmp_gr$columnM = mean_meth_breast[, "cancer"] - mean_meth_breast[, "normal"]
 dmp_gr$columnA = 0.5 * (mean_meth_breast[, "cancer"] + mean_meth_breast[, "normal"])
@@ -300,7 +301,7 @@ epivizEnv$remove_all_charts()
 
 ## Differentially Methylated Region Analysis
 
-Let's start by adding gene annotation track, CpG islands and heatmap for breat(tumor and cancer), lung and colon tissues from the gene expression barcode datsest, similar to what we did at the beginning of this vignette
+Let's start by adding gene annotation track, CpG islands and heatmap for breast (tumor and cancer), lung, and colon tissues from the gene expression barcode datsest, similar to what we did at the beginning of this vignette
 
 ```{r}
 genes_track <- epivizChart(Homo.sapiens, parent=epivizEnv)
@@ -312,14 +313,14 @@ and add the promoter regions and average methylation tracks we added previously.
 
 ```{r}
 promoter_track <- epivizChart(promoter_regions, datasource_name="Promoters", parent=epivizEnv)
-beta_track <- epivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv)
+beta_track <- epivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv, colors=colors)
 ```
 
 Next, use Minfi's bumphunter function to find differentially methylated regions, which are deviations in the methylation of relatively small CpG loci clusters at the gene promoter scale (1-2kb), between normal and tumor breast tissue. Bumphunting uses a cutoff value to determine the magnitude in methylation difference to identify differentially methylated regions (DMR).
 
 ```{r}
 # first subset to breast samples
-gratio_set_breast <- gratio_set[,which(gratio_set$Tissue=="breast")]
+gratio_set_breast <- gratio_set[, which(gratio_set$Tissue == "breast")]
 
 # make a design matrix to use with bumphunter
 status <- pData(gratio_set_breast)$Status
@@ -339,9 +340,9 @@ Let's add a track containg the resulting dmrs. We will color blocks in track dep
 
 ```{r}
 # categorize dmrs by type
-dmr_gr <- with(bumps$table, GRanges(chr, IRanges(start,end), area=area, value=value))
+dmr_gr <- with(bumps$table, GRanges(chr, IRanges(start, end), area=area, value=value))
 dmr_gr$type <- ifelse(abs(dmr_gr$value) < 0.1, "neither",
-  ifelse(dmr_gr$value<0, "hypo", "hyper"))
+  ifelse(dmr_gr$value < 0, "hypo", "hyper"))
 table(dmr_gr$type)
 
 # make a GRanges object for each dmr type
@@ -349,12 +350,12 @@ hyper_gr <- dmr_gr[dmr_gr$type == "hyper"]
 hypo_gr <- dmr_gr[dmr_gr$type == "hypo"]
 
 # add each of these as a datasource on epiviz
-hypo_ds <- epivizEnv$data_mgr$add_measurements(hypo_gr, datasource_name = "Hypo DMRs")
-hyper_ds <- epivizEnv$data_mgr$add_measurements(hyper_gr, datasource_name = "Hyper DMRs")
+hypo_ds <- epivizEnv$data_mgr$add_measurements(hypo_gr, datasource_name="Hypo DMRs")
+hyper_ds <- epivizEnv$data_mgr$add_measurements(hyper_gr, datasource_name="Hyper DMRs")
 
 # add the track
 measurements <- c(hypo_ds$get_measurements(), hyper_ds$get_measurements())
-dmr_track <- epivizChart(chart="BlocksTrack", measurements = measurements, parent=epivizEnv)
+dmr_track <- epivizChart(chart="BlocksTrack", measurements=measurements, parent=epivizEnv)
 dmr_track
 ```
 
@@ -430,9 +431,9 @@ blocks <- blockFinder(cl$object, mod, cluster=cl$blockInfo$pns, cutoff = 0.1)
 Let's add a track with hypomethylated blocks identified. 
 
 ```{r,eval=FALSE}
-blocks_gr <- with(blocks$table, GRanges(chr, IRanges(start,end), area=area, value=value))
-blocks_gr$type <- ifelse(abs(blocks_gr$value)<0.1, "neither",
-  ifelse(blocks_gr$value<0, "hypo", "hyper"))
+blocks_gr <- with(blocks$table, GRanges(chr, IRanges(start, end), area=area, value=value))
+blocks_gr$type <- ifelse(abs(blocks_gr$value) < 0.1, "neither",
+  ifelse(blocks_gr$value < 0, "hypo", "hyper"))
 table(blocks_gr$type)
 
 hypo_blocks <- blocks_gr[blocks_gr$type == "hypo",]
