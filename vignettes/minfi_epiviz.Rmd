@@ -189,8 +189,11 @@ promoters_track$get_available_settings()
 
 Let's change the track color to distinguish it from the CpG track we added previously:
 
-```{r, eval=FALSE}
-promoters_track$set_colors(c("#FF5733"))
+```{r}
+library(RColorBrewer)
+color <- brewer.pal(3, "Set1")
+
+promoters_track$set_colors(color)
 promoters_track
 ```
 
@@ -239,8 +242,9 @@ Now we have a matrix with mean methylation for each group of samples which we wi
 ```{r}
 cpg_gr <- granges(gm_set)
 mcols(cpg_gr) <- mean_betas
+colors <- brewer.pal(4, "Set2")
 
-beta_track <- epivizChart(cpg_gr,datasource_name="Percent Methylation", type="bp", parent=epivizEnv)
+beta_track <- epivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv, colors=colors)
 beta_track
 ```
 
@@ -281,12 +285,15 @@ epivizEnv
 (or) We can create a new `epivizNavigation` element, and assign it to the genomic location of the TRIM29 gene.
 
 ```{r}
-epivizNav = epivizNav("chr11", 119500000, 120100000, parent=epivizEnv)
+epivizNav <- epivizNav("chr11", 119500000, 120100000, parent=epivizEnv)
 
 # needs epivizrChart branch - nav_branch to work.
 # copy charts from env
 # charts <- epivizEnv$get_charts() 
 # epivizNav$clone_charts(charts) 
+
+# or using init_region
+# epivizEnv$init_region(chr="chr11", start=119500000, end=120100000)
 
 epivizEnv
 ```
