@@ -19,7 +19,7 @@ lets first load the libraries
 ```{r, eval=TRUE}
 library(epivizrChart)
 library(Homo.sapiens)
-library(Bioc2017)
+library(epivizWorkshop)
 ```
 
 We have a new element called environment. `epiviz-environment` enables brushing across all the charts in the current workspace and manages data. The environment also lets you set a genomic location to all its children charts. This will be more clear at the end of this vignette. 
@@ -27,13 +27,13 @@ We have a new element called environment. `epiviz-environment` enables brushing 
 First, Create an epiviz enivornment
 
 ```{r}
-epivizEnv <- EpivizEnvironment(chr="chr11", start= 34000000, end = 39000000)
+epivizEnv <- epivizEnv(chr="chr11", start= 34000000, end = 39000000)
 ```
 
 Lets add the hg19 reference genes track
 
 ```{r}
-genes_track <- EpivizChart(Homo.sapiens, parent=epivizEnv)
+genes_track <- epivizChart(Homo.sapiens, parent=epivizEnv)
 genes_track
 ```
 
@@ -41,7 +41,7 @@ Now, let's add the CpG island track included in this package.
 
 ```{r}
 data(cgi_gr)
-cgi_track <- EpivizChart(cgi_gr, parent=epivizEnv, datasource_name="CpG Islands")
+cgi_track <- epivizChart(cgi_gr, parent=epivizEnv, datasource_name="CpG Islands")
 cgi_track
 ```
 
@@ -49,7 +49,7 @@ Now, let's add a heatmap with the gene expression barcode data
 
 ```{r}
 data(bcode_eset)
-bcode_hmap <- EpivizChart(bcode_eset, parent=epivizEnv, datasource_name="Gene Expression Barcode", chart="HeatmapPlot")
+bcode_hmap <- epivizChart(bcode_eset, parent=epivizEnv, datasource_name="Gene Expression Barcode", chart="HeatmapPlot")
 
 bcode_hmap
 ```

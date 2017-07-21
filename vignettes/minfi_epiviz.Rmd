@@ -65,7 +65,7 @@ BiocInstaller::biocLite("epiviz/epivizrChart@workshop-bioc")
 For this workshop we have subsetted these to chromosomes 10, 11 and 20:
 
 ```{r, results='hide'}
-library(Bioc2017)
+library(epivizWorkshop)
 library(minfi)
 library(epivizrChart)
 data(meth_set)
