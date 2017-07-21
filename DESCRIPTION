@@ -1,4 +1,4 @@
-Package: Bioc2017
+Package: epivizWorkshop
 Type: Package
 Title: Interactive R markdown using epiviz web components
 Version: 0.1.0
@@ -14,6 +14,7 @@ Depends:
     R (>= 3.4.0)
 Suggests: epivizrChart, epivizrData, GenomicFeatures, Homo.sapiens, hgu133plus2.db,
     knitr,
-    rmarkdown
+    rmarkdown,
+    BiocStyle
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1

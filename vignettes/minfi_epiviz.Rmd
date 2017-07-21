@@ -2,7 +2,8 @@
 title: "Minfi Methylation Analysis with epiviz Integration"
 author: "Jayaram Kancherla, Brian Gottfried, Héctor Corrada Bravo"
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  BiocStyle::html_document
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Minfi methylation analysis with epiviz}
@@ -27,7 +28,7 @@ We will use mainly the `minfi` and `epivizrChart` packages in Bioconductor. The 
 
 #### Tissue Specific DNA Methylation in Normal Human Breast Epithelium and in Breast Cancer (Avraham et al., 2014)     
 
-Research findings from Avraham et al. in 2014 conclude that the TRIpartite Motif-containing 29 (TRIM29), also called the ataxia telangiectasia group D-complementing (ATDC), has differing functions in various cancer types. In breast cancer, the expression of TRIM29 is less than the expression in normal breast tissue, and it acts as a tumor suppressor. The promoter of the gene is hypo-methylated in normal breast tissue, but hyper-methylated in other normal tissues, like the colon, lung, and endometrium, where it is oncogenic. In tumor breast tissues, the methylation increased and expression decreased when compared with normal breast tissues. In comparisons between other cancer types and their respective normal tissues, the opposite methylation pattern was observed^1^.   
+Research findings from Avraham et al. in 2014 conclude that the TRIpartite Motif-containing 29 (TRIM29), also called the ataxia telangiectasia group D-complementing (ATDC), has differing functions in various cancer types. In breast cancer, the expression of TRIM29 is less than the expression in normal breast tissue, and it acts as a tumor suppressor. The promoter region of the gene is hypo-methylated in normal breast tissue, but hyper-methylated in other normal tissues, like the colon, lung, and endometrium, where it is oncogenic. In tumor breast tissues, the methylation increased and expression decreased when compared with normal breast tissues. In comparisons between other cancer types and their respective normal tissues, the opposite methylation pattern was observed^1^.   
 
 The researchers identified 110 genes that were differentially methylated in the breast compared to all other epithelial tissues tested. Of these 110 genes, a group 15 of them were DNA binding and transcription regulators, which were found to have a notable relevance to cancer. Their analysis of TCGA data for these genes, including ALX4, GATA5, MGMT, NEUROG1, SOX10, SREBP1, ST18, TRIM29, and TP73, revealed methylation differences at most of the corresponding loci between normal and tumor breast samples. The methylation pattern also varied between breast cancer types, including basal, luminal-A and luminal-B, and between different normal tissue types, identifying these gene regions as differentially methylated regions (DMRs). The TRIM29 gene has a CpG island at the transcription start site of the gene (between 120,008,000 and 120,009,000 on chromosome 11)^1^. 
 
@@ -58,7 +59,7 @@ Installing, the `epivizrChart` package
 
 ```{r, eval=FALSE}
 library(devtools)
-BiocInstaller::biocLite("epiviz/epivizrChart")
+BiocInstaller::biocLite("epiviz/epivizrChart@workshop-bioc")
 ```
 
 For this workshop we have subsetted these to chromosomes 10, 11 and 20:
@@ -128,10 +129,7 @@ Let's start the application with hg19 as the reference for genes track. We will 
 ```{r}
 epivizEnv <- epivizEnv(chr="chr11", start=118000000, end=121000000)
 
-# library(epivizrChart)
 library(Homo.sapiens)
-# epivizEnv <- epivizEnv(chr="chr11", start=119800000, end=120050000)
-
 genes_track <- epivizChart(Homo.sapiens, parent=epivizEnv)
 
 genes_track
@@ -150,8 +148,6 @@ Now, let's add a heatmap with the gene expression barcode data
 
 ```{r}
 data(bcode_eset)
-
-# bcode_eset = updateObject(bcode_eset)
 
 settings <- list(maxColumns = 120, colLabel="SYMBOL")
 bcode_hmap <- epivizChart(bcode_eset, parent=epivizEnv, datasource_name="Gene Expression Barcode", chart="HeatmapPlot", settings = settings)
@@ -174,8 +170,10 @@ Before we do this analysis, we may want to add a track showing promoter regions 
 ```{r}
 library(GenomicFeatures)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+
 promoter_regions <- promoters(TxDb.Hsapiens.UCSC.hg19.knownGene, upstream=1000, downstream=200)
 promoters_track <- epivizChart(promoter_regions, parent=epivizEnv, datasource_name="Promoters")
+
 promoters_track
 ```
 
@@ -190,7 +188,7 @@ Let's change the track color to distinguish it from the CpG track we added previ
 
 ```{r}
 library(RColorBrewer)
-color <- brewer.pal(3, "Set1")
+color <- brewer.pal(3, "Paired")
 
 promoters_track$set_colors(color)
 promoters_track
@@ -244,8 +242,10 @@ Now we have a matrix with mean methylation for each group of samples which we wi
 cpg_gr <- granges(gm_set)
 mcols(cpg_gr) <- mean_betas
 colors <- brewer.pal(4, "Set2")
+settings <- list(lineThickness = 2, step=1)
 
-beta_track <- epivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv, colors=colors)
+beta_track <- epivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv, colors=colors, settings=settings)
+
 beta_track
 ```
 
@@ -261,6 +261,7 @@ So, since we will be using a "StackedLineTrack" which is not a default chart typ
 
 ```{r}
 pvals_track <- epivizChart(dmp_gr, parent=epivizEnv, chart="StackedLineTrack", columns="pval", type="bp")
+
 pvals_track
 ```
 
@@ -271,6 +272,7 @@ dmp_gr$methylation_diff = mean_betas[, "breast:cancer"] - mean_betas[, "breast:n
 dmp_gr$methylation_avg = 0.5 * (mean_betas[, "breast:cancer"] + mean_betas[, "breast:normal"])
 
 ma_plot <- epivizChart(dmp_gr, parent=epivizEnv, chart="ScatterPlot", columns=c("methylation_avg", "methylation_diff"), type="bp")
+
 ma_plot
 ```
 
@@ -286,7 +288,8 @@ epivizEnv
 (or) We can create a new `epivizNavigation` element, and assign it to the genomic location of the TRIM29 gene.
 
 ```{r}
-epivizNav <- epivizNav("chr11", 119500000, 120100000, parent=epivizEnv)
+# create annavigation element
+# epivizNav <- epivizNav("chr11", 119819400, 120100000, parent=epivizEnv)
 
 # needs epivizrChart branch - nav_branch to work.
 # copy charts from env
@@ -294,7 +297,7 @@ epivizNav <- epivizNav("chr11", 119500000, 120100000, parent=epivizEnv)
 # epivizNav$clone_charts(charts) 
 
 # or using init_region
-# epivizEnv$init_region(chr="chr11", start=119500000, end=120100000)
+epivizEnv$init_region(chr="chr11", start=119819400, end=120150600)
 
 epivizEnv
 ```
@@ -362,6 +365,7 @@ hyper_ds <- epivizEnv$data_mgr$add_measurements(hyper_gr, datasource_name="Hyper
 # add the track
 measurements <- c(hypo_ds$get_measurements(), hyper_ds$get_measurements())
 dmr_track <- epivizChart(chart="BlocksTrack", measurements=measurements, parent=epivizEnv)
+
 dmr_track
 ```
 
