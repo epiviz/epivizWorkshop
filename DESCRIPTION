@@ -5,9 +5,9 @@ Version: 0.1.0
 Author: c(person("Hector", "Corrada Bravo", email = "hcorrada@gmail.com", role = c("aut"),
         person("Jayaram", "Kancherla", email="jkanche@umiacs.umd.edu", role=c("aut", "cre")),
         person("Brian", "Gottfried", email = "briangottfried@me.com", role = c("aut"))))
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: Jayaram Kancherla <jkanche@umiacs.umd.edu>
 Description: Create interactive R markdown documents using epiviz web components
-License: MIT
+License: CC0
 Encoding: UTF-8
 LazyData: true
 Depends:
@@ -15,6 +15,10 @@ Depends:
 Suggests: epivizrChart, epivizrData, GenomicFeatures, Homo.sapiens, hgu133plus2.db,
     knitr,
     rmarkdown,
-    BiocStyle
+    BiocStyle,
+    RColorBrewer,
+    minfi,
+    doParallel,
+    TxDb.Hsapiens.UCSC.hg19.knownGene
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
