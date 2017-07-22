@@ -110,8 +110,8 @@ To create an environment,
 ```{r}
 epivizEnv <- epivizEnv(chr="chr11", start=118000000, end=121000000)
 
-# to add charts to the environment
-genes_track <- epivizChart(Homo.sapiens, chr="chr11", start=118000000, end=121000000, parent=epivizEnv)
+# to add chart to the environment
+genes_track <- epivizEnv$plot(Homo.sapiens, chr="chr11", start=118000000, end=121000000)
 
 epivizEnv
 ```
@@ -130,7 +130,7 @@ Let's start the application with hg19 as the reference for genes track. We will 
 epivizEnv <- epivizEnv(chr="chr11", start=118000000, end=121000000)
 
 library(Homo.sapiens)
-genes_track <- epivizChart(Homo.sapiens, parent=epivizEnv)
+genes_track <- epivizEnv$plot(Homo.sapiens)
 
 genes_track
 ```
@@ -139,7 +139,7 @@ Now, let's add the CpG island track included in this package.
 
 ```{r}
 data(cgi_gr)
-cgi_track <- epivizChart(cgi_gr, parent=epivizEnv, datasource_name="CpG Islands")
+cgi_track <- epivizEnv$plot(cgi_gr, datasource_name="CpG Islands")
 
 cgi_track
 ```
@@ -150,7 +150,7 @@ Now, let's add a heatmap with the gene expression barcode data
 data(bcode_eset)
 
 settings <- list(maxColumns = 300, colLabel="SYMBOL")
-bcode_hmap <- epivizChart(bcode_eset, parent=epivizEnv, datasource_name="Gene Expression Barcode", chart="HeatmapPlot", settings=settings)
+bcode_hmap <- epivizEnv$plot(bcode_eset, datasource_name="Gene Expression Barcode", chart="HeatmapPlot", settings=settings)
 
 bcode_hmap
 ```
@@ -209,7 +209,7 @@ Now we see the probes (CpG positions) that show differential
 methylation along with associated statistics for them. Let's first add a track showing the location of these CpGs to our session. 
 ```{r}
 dmp_gr <- granges(gm_set[rownames(dmp),])
-dmps_track <- epivizChart(dmp_gr, parent=epivizEnv, datasource_name="Differentially Methylated Positions") 
+dmps_track <- epivizEnv$plot(dmp_gr, datasource_name="Differentially Methylated Positions") 
 
 dmps_track
 ```
@@ -243,7 +243,7 @@ cpg_gr <- granges(gm_set)
 mcols(cpg_gr) <- mean_betas
 colors <- brewer.pal(4, "Spectral")
 
-beta_track <- epivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv, colors=colors)
+beta_track <- epivizEnv$plot(cpg_gr, datasource_name="Percent Methylation", type="bp", colors=colors)
 
 beta_track
 ```
@@ -259,7 +259,7 @@ This time, we are plotting things a bit differently. The `plot` method we have u
 So, since we will be using a "StackedLineTrack" which is not a default chart type, we need to do these two steps in order.
 
 ```{r}
-pvals_track <- epivizChart(dmp_gr, parent=epivizEnv, chart="StackedLineTrack", columns="pval", type="bp")
+pvals_track <- epivizEnv$plot(dmp_gr, chart="StackedLineTrack", columns="pval", type="bp")
 
 pvals_track
 ```
@@ -270,7 +270,7 @@ Finally, let's add an MA plot of BRCA methylation to visualize how methylation d
 dmp_gr$methylation_diff = mean_betas[, "breast:cancer"] - mean_betas[, "breast:normal"]
 dmp_gr$methylation_avg = 0.5 * (mean_betas[, "breast:cancer"] + mean_betas[, "breast:normal"])
 
-ma_plot <- epivizChart(dmp_gr, parent=epivizEnv, chart="ScatterPlot", columns=c("methylation_avg", "methylation_diff"), type="bp")
+ma_plot <- epivizEnv$plot(dmp_gr, chart="ScatterPlot", columns=c("methylation_avg", "methylation_diff"), type="bp")
 
 ma_plot
 ```
@@ -304,16 +304,16 @@ epivizEnv$remove_all_charts()
 Let's start by adding gene annotation track, CpG islands and heatmap for breast (tumor and cancer), lung, and colon tissues from the gene expression barcode datsest, similar to what we did at the beginning of this vignette
 
 ```{r}
-genes_track <- epivizChart(Homo.sapiens, parent=epivizEnv)
-cgi_track <- epivizChart(cgi_gr, parent=epivizEnv, datasource_name="CpG Islands")
-bcode_hmap <- epivizChart(bcode_eset, parent=epivizEnv, datasource_name="Gene Expression Barcode", chart="HeatmapPlot", settings=settings)
+genes_track <- epivizEnv$plot(Homo.sapiens)
+cgi_track <- epivizEnv$plot(cgi_gr, datasource_name="CpG Islands")
+bcode_hmap <- epivizEnv$plot(bcode_eset, datasource_name="Gene Expression Barcode", chart="HeatmapPlot", settings=settings)
 ```
 
 and add the promoter regions and average methylation tracks we added previously. 
 
 ```{r}
-promoter_track <- epivizChart(promoter_regions, datasource_name="Promoters", parent=epivizEnv)
-beta_track <- epivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv, colors=colors)
+promoter_track <- epivizEnv$plot(promoter_regions, datasource_name="Promoters")
+beta_track <- epivizEnv$plot(cpg_gr, datasource_name="Percent Methylation", type="bp", colors=colors)
 ```
 
 Next, use Minfi's bumphunter function to find differentially methylated regions, which are deviations in the methylation of relatively small CpG loci clusters at the gene promoter scale (1-2kb), between normal and tumor breast tissue. Bumphunting uses a cutoff value to determine the magnitude in methylation difference to identify differentially methylated regions (DMR).
@@ -350,12 +350,12 @@ hyper_gr <- dmr_gr[dmr_gr$type == "hyper"]
 hypo_gr <- dmr_gr[dmr_gr$type == "hypo"]
 
 # add each of these as a datasource on epiviz
-hypo_ds <- epivizEnv$data_mgr$add_measurements(hypo_gr, datasource_name="Hypo DMRs")
-hyper_ds <- epivizEnv$data_mgr$add_measurements(hyper_gr, datasource_name="Hyper DMRs")
+hypo_ds <- epivizEnv$add_data(hypo_gr, datasource_name="Hypo DMRs")
+hyper_ds <- epivizEnv$add_data(hyper_gr, datasource_name="Hyper DMRs")
 
 # add the track
 measurements <- c(hypo_ds$get_measurements(), hyper_ds$get_measurements())
-dmr_track <- epivizChart(chart="BlocksTrack", measurements=measurements, parent=epivizEnv)
+dmr_track <- epivizEnv$plot(chart="BlocksTrack", measurements=measurements)
 
 dmr_track
 ```
@@ -398,24 +398,24 @@ epivizEnv$remove_all_charts()
 Let's start with the same basic workspace again.
 
 ```{r,eval=FALSE}
-genes_track <- epivizChart(Homo.sapiens, parent=epivizEnv)
-cgi_track <- epivizChart(cgi_gr, parent=epivizEnv, datasource_name="CpG Islands")
-bcode_hmap <- epivizChart(bcode_eset, parent=epivizEnv, datasource_name="Gene Expression Barcode", chart="HeatmapPlot")
+genes_track <- epivizEnv$plot(Homo.sapiens)
+cgi_track <- epivizEnv$plot(cgi_gr, datasource_name="CpG Islands")
+bcode_hmap <- epivizEnv$plot(bcode_eset, datasource_name="Gene Expression Barcode", chart="HeatmapPlot")
 ```
 
 The third analysis we will use from minfi will be based on finding larger regions of methylation differences (blocks) in breast cancer. As before, let's add tracks with promoter regions and average methylation percentages.
 
 ```{r,eval=FALSE}
-promoter_track <- epivizChart(promoter_regions, datasource_name="Promoters", parent=epivizEnv)
-beta_track <- epivizChart(cpg_gr, datasource_name="Percent Methylation", type="bp", parent=epivizEnv, colors=colors)
+promoter_track <- epivizEnv$plot(promoter_regions, datasource_name="Promoters")
+beta_track <- epivizEnv$plot(cpg_gr, datasource_name="Percent Methylation", type="bp", colors=colors)
 ```
 
 Let's also add a track showing breast beta methylation difference across the genome
 
 ```{r,eval=FALSE}
 cpg_gr$breast_diff <- cpg_gr$`breast:cancer` - cpg_gr$`breast:normal`
-diff_track <- epivizChart(cpg_gr, datasource_name="Methylation Beta Difference", type="bp",
-  columns="breast_diff", parent=epivizEnv)
+diff_track <- epivizEnv$plot(cpg_gr, datasource_name="Methylation Beta Difference", type="bp",
+  columns="breast_diff")
 
 diff_track
 ```
@@ -438,7 +438,7 @@ blocks_gr$type <- ifelse(abs(blocks_gr$value) < 0.1, "neither",
 table(blocks_gr$type)
 
 hypo_blocks <- blocks_gr[blocks_gr$type == "hypo",]
-hypo_track <- epivizChart(hypo_blocks, datasource_name="Breast Hypo Blocks", parent=epivizEnv)
+hypo_track <- epivizEnv$plot(hypo_blocks, datasource_name="Breast Hypo Blocks")
 hypo_track
 ```
 
