@@ -1,6 +1,8 @@
-Workshop package for Bioconductor 2017.
+# Interactive visualization and Data Analysis with epiviz web components.
 
-to open the vignette, 
+Workshop vignette for BioConductor 2017.
+
+To open the vignette file, 
 
 `
 file.edit(system.file("doc", "minfi_epiviz.Rmd", package="epivizWorkshop"))
