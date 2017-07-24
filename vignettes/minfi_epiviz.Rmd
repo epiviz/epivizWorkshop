@@ -95,15 +95,12 @@ genes_track <- epivizChart(Homo.sapiens, chr="chr11", start=118000000, end=12100
 genes_track
 ```
 
-
 `epivizChart` infers the chart type from the data object that was passed. Parameters are available to explicitly plot using a particular chart type.
 
 
-### Epiviz Environment and Navigation Components
+### Epiviz Environment
 
 An important part of the `epivizrChart` design is that data and plots are separated: you can make multiple charts from the same data object without having to replicate data multiple times. This way, data queries are made by data object, not per chart, which leads to a more responsive design of the system. To enable this, we built the `epiviz-environment` web component. The environment element also enables brushing across all the charts. 
-
-`epiviz-navigation` is a specific instance of environment elements with genomic context linked to it. In interactive sessions with a data provider, navigation elements provide functionality to search for a gene/probe and navigate to a genomic location. Navigation elements also provide an ideogram view when collapsed. This will be more clear as we walk through the rest of the vignette. 
 
 To create an environment, 
 
@@ -111,10 +108,31 @@ To create an environment,
 epivizEnv <- epivizEnv(chr="chr11", start=118000000, end=121000000)
 
 # to add charts to the environment
-genes_track <- epivizChart(Homo.sapiens, chr="chr11", start=118000000, end=121000000, parent=epivizEnv)
+genes_track <- epivizChart(Homo.sapiens, parent=epivizEnv)
+
+data(cgi_gr)
+cgi_track <- epivizChart(cgi_gr, parent=epivizEnv, datasource_name="CpG Islands")
 
 epivizEnv
 ```
+
+### Epiviz Navigation
+`epiviz-navigation` is a specific instance of environment elements with genomic context linked to it. In interactive sessions with a data provider, navigation elements provide functionality to search for a gene/probe and navigate to a genomic location. Navigation elements also provide an ideogram view when collapsed. This will be more clear as we walk through the rest of the vignette. 
+
+To create a navigation, 
+
+```{r}
+epivizNav <- epivizNav(chr="chr11", start=118000000, end=121000000)
+
+# to add charts to the environment
+genes_track <- epivizChart(Homo.sapiens, parent=epivizNav)
+
+data(cgi_gr)
+cgi_track <- epivizChart(cgi_gr, parent=epivizNav, datasource_name="CpG Islands")
+
+epivizNav
+```
+
 
 Note: you can create environments without any genomic location. This will then plot all the data from a data object. Navigation elements must be initialized with a genomic location.
 
