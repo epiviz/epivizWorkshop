@@ -1,7 +1,7 @@
 Package: epivizWorkshop
 Type: Package
 Title: Interactive R markdown using epiviz web components
-Version: 0.1.0
+Version: 0.1.1
 Author: c(person("Hector", "Corrada Bravo", email = "hcorrada@gmail.com", role = c("aut"),
         person("Jayaram", "Kancherla", email="jkanche@umiacs.umd.edu", role=c("aut", "cre")),
         person("Brian", "Gottfried", email = "briangottfried@me.com", role = c("aut"))))
