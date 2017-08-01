@@ -57,9 +57,9 @@ GenomicMethylSet       | `ratioConvert`         | GenomicRatioSet  |
 
 Installing, the `epivizrChart` package
 
-```{r, eval=FALSE}
+```{r}
 library(devtools)
-BiocInstaller::biocLite("epiviz/epivizrChart@workshop-bioc")
+BiocInstaller::biocLite("epiviz/epivizrChart")
 ```
 
 For this workshop we have subsetted these to chromosomes 10, 11 and 20:
